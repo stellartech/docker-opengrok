@@ -5,15 +5,15 @@ service tomcat7 start
 ln -s /src $OPENGROK_INSTANCE_BASE/src
 
 # first-time index
-echo "** Running first-time indexing"
+echo "** Running first-time indexing without vcs history"
 cd /opengrok/bin
-./OpenGrok index
+./OpenGrok -q -P -r off index
 
 # ... and we keep running the indexer to keep the container on
 echo "** Waiting for source updates..."
 touch $OPENGROK_INSTANCE_BASE/reindex
 inotifywait -mr -e CLOSE_WRITE $OPENGROK_INSTANCE_BASE/src | while read f; do
   printf "*** %s\n" "$f"
-  echo "*** Updating index"
-  ./OpenGrok index
+  echo "*** Updating index without vcs history"
+  ./OpenGrok -q -P -r off index
 done
